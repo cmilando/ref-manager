@@ -2,10 +2,17 @@ source('class_defs.R')
 source('class_methods.R')
 
 #' Fill from Excel
-test_lib <- new('ref_lib')
+aim3_lib <- new('ref_lib')
+objects(aim3_lib@hash)
 
 dir <- '../../Research/3 - Aim 3/'
 fname = 'Lit_Review v2.xlsx'
 
-test_lib <- fillFromExcel(test_lib, dir, fname)
+aim3_lib <- fillFromExcel(aim3_lib, dir, fname)
+
+
+save(aim3_lib, file = 'dbs/aim3_lib.RData')
+
+
+
 

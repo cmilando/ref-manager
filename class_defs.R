@@ -5,6 +5,8 @@ ref <- setClass(
   
   #' define slots
   slots = c(
+    id         = 'numeric',
+    date_added = 'POSIXlt',
     link     = 'character',
     citation = 'character',
     abstract = 'character',
@@ -21,12 +23,14 @@ ref_lib <- setClass(
   #' define slots
   slots = c(
     library = 'list',
-    n = 'numeric'
+    n = 'numeric',
+    hash = 'environment'
   ),
   
   prototype = list(
     library = list(),
-    n = 0
+    n = 0,
+    hash = new.env(hash=TRUE, parent=emptyenv(), size=100L)
   )
   
   
