@@ -117,6 +117,8 @@ setMethod(f="printDB",
             \\usepackage{hyperref}
             \\hypersetup{colorlinks=true,urlcolor=blue,}
             
+            \\usepackage{changepage}
+            
             \\begin{document}
             ')
             

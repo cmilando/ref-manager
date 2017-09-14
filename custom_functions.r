@@ -32,17 +32,31 @@ get_cat_list <- function(theObject) {
     citation <- gsub('"',"'",ref@citation,fixed = T)
     citation <- gsub('&',"And",citation,fixed = T)
     citation_u <- citation
+    
+    abstract <- gsub('"',"'",ref@abstract,fixed = T)
+    abstract <- gsub('&',"And",abstract,fixed = T)
+    abstract_u <- abstract
+    
     notes <- gsub('\n',' \\\\ \\\\',ref@notes, fixed = T)
     notes_u <- notes
-    #notes <- gsub("'","\'",notes, fixed = T)
-    
-    cat_list <- c(cat_list, paste0('\\indent '))
-    
-    cat_list <- c(cat_list, paste0('\\textbf{\\underline{',ref@id,'}} ',sep=''))
-    cat_list <- c(cat_list, paste0('\\textit{',citation_u,'} ',sep=''))
+
+    cat_list <- c(cat_list, paste0('\\noindent '))
+
+    cat_list <- c(cat_list, paste0('\\textbf{\\underline{REF-',ref@id,'}} ',sep=''))
+    cat_list <- c(cat_list, paste0('\\textbf{\\textit{',citation_u,'}} ',sep=''))
     cat_list <- c(cat_list, paste0('\\href{',ref@link,'}{link to article} ',sep=''))
     
     cat_list <- c(cat_list, paste0('\\\\  \\\\'))
+    
+    cat_list <- c(cat_list, paste0('\\indent  '))
+
+    cat_list <- c(cat_list, '\\underline{Abstract:}')
+    cat_list <- c(cat_list, paste0(abstract_u))
+    cat_list <- c(cat_list, paste0('\\\\  \\\\'))
+    
+    cat_list <- c(cat_list, paste0('\\indent  '))
+
+    cat_list <- c(cat_list, '\\underline{Notes:}')
     cat_list <- c(cat_list, paste0(notes_u))
     cat_list <- c(cat_list, paste0('\\\\  \\\\'))
     
