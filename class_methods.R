@@ -20,28 +20,11 @@ setMethod(f="addRef",
             #' iterate library size by 1
             theObject@n <- theObject@n + 1
             
-            #' add contents to the hash table
-            get_keys <- function(s) {
-              s1 <- gsub("\n", " ", s)
-              s2 <- gsub("\t", " ", s1)
-              s3 <- gsub("[[:punct:]]", "", s2)
-              s4a <- strsplit(s3, " ")[[1]]
-              s4b <- strsplit(tolower(s3), " ")[[1]]
-              s5 <- sort(unique(c(s4a, s4b)))
-              return(s5[s5 != ''])
-            }
-            
             citation_keys <- get_keys(ref@citation)
             abstract_keys <- get_keys(ref@abstract)
             notes_keys <- get_keys(ref@notes)
             keys_to_add <- as.list(unique(c(citation_keys,
                                             abstract_keys, notes_keys)))
-            
-            add_to_hash <- function(x, v, h) {
-              val <- c()
-              if(exists(x, h)) val <- get(x, h)
-              assign(x, c(v, val), h)
-            }
             
             for(key in keys_to_add) 
               add_to_hash(key, theObject@n, theObject@hash)
@@ -69,11 +52,6 @@ setMethod(f="fillFromExcel",
             
             library(XLConnect)
             
-            getA1 <- function(w, sht) {
-              names(readWorksheet(w, sheet = 'DB',startCol = 1, endCol = 1,
-                                  startRow = 1, endRow = 1, readStrategy = "fast"))
-            }
-            
             w <- loadWorkbook(paste0(dir,fname))
             sht <- 'DB'
             
@@ -100,5 +78,64 @@ setMethod(f="fillFromExcel",
             
             return(theObject)
             
+          }
+)
+
+#' method for searching the db
+
+
+#' method for printing nicely
+setGeneric(name="printDB",
+           def=function(theObject)
+           {
+             standardGeneric("printDB")
+           }
+)
+
+setMethod(f="printDB",
+          signature="ref_lib",
+
+          definition=function(theObject)
+
+          {
+            library(xtable)
+            library(tools)
+            library(Unicode)
+            
+            fname <- substitute(theObject)
+            
+            cat_list <- get_cat_list(theObject)
+
+            sink(paste0('tmp/',fname,".Rnw"))
+            
+            cat('
+            \\documentclass{article}
+            \\usepackage[top=0.3in, bottom=0.3in, left=0.3in, right=0.3in]{geometry}
+            \\usepackage{Sweave}
+            \\usepackage[utf8]{inputenc}
+            
+            \\usepackage{hyperref}
+            \\hypersetup{colorlinks=true,urlcolor=blue,}
+            
+            \\begin{document}
+            ')
+            
+            invisible(cat(cat_list))
+            
+            cat("
+            \\end{document}
+            ")
+            
+            sink()
+            Sweave(paste0('tmp/',fname,".Rnw"))
+            
+            texi2pdf(paste0(fname,".tex"),clean = T, quiet = F)
+            
+            system(paste('mv',paste0(fname,".tex"),
+                         paste0('tmp/',fname,".tex")))
+            
+            system(paste('mv',paste0(fname,".pdf"),
+                         paste0('pdfs/',fname,".pdf")))
+
           }
 )
