@@ -98,10 +98,7 @@ setMethod(f="printDB",
           definition=function(theObject)
 
           {
-            library(xtable)
-            library(tools)
-            library(Unicode)
-            
+
             fname <- substitute(theObject)
             
             cat_list <- get_cat_list(theObject)
@@ -111,14 +108,11 @@ setMethod(f="printDB",
             cat('
             \\documentclass{article}
             \\usepackage[top=0.3in, bottom=0.3in, left=0.3in, right=0.3in]{geometry}
-            \\usepackage{Sweave}
             \\usepackage[utf8]{inputenc}
-            
+            \\usepackage{textcomp}
+
             \\usepackage{hyperref}
             \\hypersetup{colorlinks=true,urlcolor=blue,}
-            
-            \\usepackage{changepage}
-            
             \\begin{document}
             ')
             
@@ -131,11 +125,16 @@ setMethod(f="printDB",
             sink()
             Sweave(paste0('tmp/',fname,".Rnw"))
             
-            texi2pdf(paste0(fname,".tex"),clean = T, quiet = F)
+            x <- readLines(paste0(fname,".tex"))
+            y <- gsub( "<U+00B5>", "\\textmu ", x, fixed = T)
+            y2 <- gsub( "<U+E5F8>", " \\mbox{-}\\mbox{-} ", y, fixed = T)
+            cat(y2, file=paste0(fname,".tex"), sep="\n")
+            
+            texi2pdf(paste0(fname,".tex"), clean = T)
             
             system(paste('mv',paste0(fname,".tex"),
                          paste0('tmp/',fname,".tex")))
-            
+
             system(paste('mv',paste0(fname,".pdf"),
                          paste0('pdfs/',fname,".pdf")))
 

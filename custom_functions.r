@@ -25,20 +25,17 @@ get_cat_list <- function(theObject) {
   
   cat_list <- c()
 
-  for(i in 1:length(theObject@library)) {
+  for(i in 1:theObject@n) {
     
     ref <- theObject@library[[i]]
     
     citation <- gsub('"',"'",ref@citation,fixed = T)
-    citation <- gsub('&',"And",citation,fixed = T)
-    citation_u <- citation
+    citation_u <- latexify(citation, doublebackslash = F)
     
     abstract <- gsub('"',"'",ref@abstract,fixed = T)
-    abstract <- gsub('&',"And",abstract,fixed = T)
-    abstract_u <- abstract
+    abstract_u <- latexify(abstract, doublebackslash = F)
     
-    notes <- gsub('\n',' \\\\ \\\\',ref@notes, fixed = T)
-    notes_u <- notes
+    notes_u <- latexify(ref@notes, doublebackslash = F)
 
     cat_list <- c(cat_list, paste0('\\noindent '))
 
