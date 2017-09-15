@@ -81,9 +81,6 @@ setMethod(f="fillFromExcel",
           }
 )
 
-#' method for searching the db
-
-
 #' method for printing nicely
 setGeneric(name="printDB",
            def=function(theObject)
