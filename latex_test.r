@@ -1,5 +1,5 @@
 
-
+library(tools)
 
 system('rm temp.*')
 sink("temp.Rnw")
@@ -13,12 +13,8 @@ cat('
 \\usepackage{hyperref}
 \\hypersetup{colorlinks=true,urlcolor=blue,}
 
-\\usepackage{listings2}
-
 \\begin{document}
 ')
-
-invisible(cat(cat_list))
 
 cat("
 \\end{document}
@@ -27,4 +23,4 @@ cat("
 sink()
 Sweave("temp.Rnw")
 
-texi2pdf('temp.tex',clean = T, quiet = F)
+texi2pdf('temp.tex')

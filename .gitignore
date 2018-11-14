@@ -5,3 +5,6 @@
 dbs/
 pdfs/
 tmp/
+lib/
+temp*
+tmp*

@@ -1,7 +1,6 @@
 
 library(tools)
 library(dplR)
-library(tools)
 
 source('custom_functions.r')
 source('class_defs.R')
