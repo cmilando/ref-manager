@@ -53,18 +53,20 @@ server <- function(input, output, session) {
   #' ////////////////////////////////////////////////////////////////////////
   
   observeEvent(input$add_ref_to_lib, {
-    add_edit(input$raw_bibtex, edit = F)
+    add_edit(input$raw_bibtex, 'add')
+    df$data <- readRDS('lib_df.RDS')
+    updateTabsetPanel(session, "inTabset", selected = "Table")
   })
   
   observeEvent(input$edit_ref_in_lib, {
-    add_edit(input$raw_bibtex, edit = T)
+    add_edit(input$raw_bibtex, 'edit')
+    df$data <- readRDS('lib_df.RDS')
+    updateTabsetPanel(session, "inTabset", selected = "Table")
   })
   
   observeEvent(input$delete_ref_in_lib, {
-    key_to_delete <- delete_ref(input$raw_bibtex)
-    print(key_to_delete)
+    key_to_delete <- add_edit(input$raw_bibtex, "delete")
     row_to_delete <- which(rownames(df$data) == key_to_delete)
-    print(row_to_delete)
     df$data <- df$data[-row_to_delete, ]
     updateTabsetPanel(session, "inTabset", selected = "Table")
   })

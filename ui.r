@@ -29,10 +29,11 @@ ui <- fluidPage(
                  
                  actionButton("add_ref_to_lib", "Add"),
                  actionButton("edit_ref_in_lib", "Edit"),
-                 actionButton("delete_ref_in_lib", "Delete"),
+                 actionButton("delete_ref_in_lib", "Delete")
                  
-                 h5('Console output'),
-                 verbatimTextOutput("verb", placeholder = T)
+                 # make sure to add comma back above
+                 # h5('Console output'),
+                 # verbatimTextOutput("verb", placeholder = T)
         )
         
       )
