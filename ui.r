@@ -26,9 +26,10 @@ ui <- fluidPage(
                  
                  textAreaInput("raw_bibtex", "raw BiBTex",
                                height = '300px', width = '600px'),
-                 actionButton("add_ref_to_lib", "Add ref to lib"),
-                 actionButton("edit_ref_in_lib", "Edit ref in lib"),
-                 actionButton("delete_ref_in_lib", "Delete ref in lib"),
+                 
+                 actionButton("add_ref_to_lib", "Add"),
+                 actionButton("edit_ref_in_lib", "Edit"),
+                 actionButton("delete_ref_in_lib", "Delete"),
                  
                  h5('Console output'),
                  verbatimTextOutput("verb", placeholder = T)

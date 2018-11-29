@@ -1,32 +1,16 @@
 server <- function(input, output, session) {
   
-  #' ////////////////////////////////////////////////////////////////////////
+  #' //////////////////////////////////////////////////////////////////////////
   #' TABLE
-  #' ////////////////////////////////////////////////////////////////////////
+  #' //////////////////////////////////////////////////////////////////////////
   
-  ## have a dropdown to select the directory
-  ## this will also have a json of project-specific inputs
-  ## like what things are in the table currently
-  
-  # this is for the buttons on 
-  shinyInput <- function(FUN, len, id, ...) {
-    inputs <- character(len)
-    for (i in seq_len(len)) {
-      inputs[i] <- as.character(FUN(paste0(id, i), ...))
-    }
-    inputs
-  }
-  
-  # this should read from a summary.Rdata, which can be modified
   df <- reactiveValues()
-  
-  # so it seems like all formatting has to happen before this
   df$data <- readRDS('lib_df.RDS')
+  observe(df$data$Actions <- 
+            shinyInput(actionButton, nrow(df$data), 'button_', label = "Edit", 
+                       onclick = 'Shiny.onInputChange(\"select_button\",  this.id)'))
   
-  # add the action button
-  observe(df$data$Actions <- shinyInput(actionButton, nrow(df$data), 'button_', label = "Edit", 
-                                        onclick = 'Shiny.onInputChange(\"select_button\",  this.id)'))
-  
+  # makes the columns selectable
   output$checkbox <- renderUI({
     checkboxGroupInput(inputId = "select_var", 
                        label = "Select Feature variables", 
@@ -35,11 +19,9 @@ server <- function(input, output, session) {
   })
   
   df_sel <- reactive({
-    
     #overwrite the current cols.rds
     req(input$select_var)
     saveRDS(input$select_var, 'select_var.RDS')
-    
     df_sel <- df$data %>% select(input$select_var)
   })
   
@@ -49,11 +31,10 @@ server <- function(input, output, session) {
            selection = 'none', rownames= FALSE)
   
   observeEvent(input$select_button, {
-    
-    print('>> EDIT REFERENCE CLICKED FROM DT')
+
     selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
     ref_id <- rownames(df$data)[selectedRow]
-    session$sendCustomMessage(type = 'resetInputValue', message =  "select_button") # this is bc reactive
+    session$sendCustomMessage(type = 'resetInputValue', message =  "select_button")
     
     fname <- paste0('lib/',ref_id, '.bib')
     this_ref <- ReadBib(fname)
@@ -68,20 +49,25 @@ server <- function(input, output, session) {
   
 
   #' ////////////////////////////////////////////////////////////////////////
-  #' ADD / EDIT
+  #' ADD / EDIT / DELETE
   #' ////////////////////////////////////////////////////////////////////////
-  rawBibTex_added <- eventReactive(input$add_ref_to_lib, {
+  
+  observeEvent(input$add_ref_to_lib, {
     add_edit(input$raw_bibtex, edit = F)
-  }, ignoreNULL = F)
-  
-  rawBibTex_edited <- eventReactive(input$edit_ref_in_lib, {
-    add_edit(input$raw_bibtex, edit = T)
-  }, ignoreNULL = F)
-  
-  output$verb <- renderPrint({
-    rawBibTex_added()
-    rawBibTex_edited()
   })
   
+  observeEvent(input$edit_ref_in_lib, {
+    add_edit(input$raw_bibtex, edit = T)
+  })
   
+  observeEvent(input$delete_ref_in_lib, {
+    key_to_delete <- delete_ref(input$raw_bibtex)
+    print(key_to_delete)
+    row_to_delete <- which(rownames(df$data) == key_to_delete)
+    print(row_to_delete)
+    df$data <- df$data[-row_to_delete, ]
+    updateTabsetPanel(session, "inTabset", selected = "Table")
+  })
+  
+
 }
