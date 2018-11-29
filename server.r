@@ -22,11 +22,11 @@ server <- function(input, output, session) {
     #overwrite the current cols.rds
     req(input$select_var)
     saveRDS(input$select_var, 'select_var.RDS')
-    df_sel <- df$data %>% select(input$select_var)
+    df_sel <- df$data %>% select(input$select_var) %>% arrange(year)
   })
   
   output$ref_table <- DT::renderDataTable({
-      df_sel()
+      df_sel() 
     }, server = FALSE, escape = FALSE, 
            selection = 'none', rownames= FALSE)
   
@@ -35,7 +35,7 @@ server <- function(input, output, session) {
     selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
     ref_id <- rownames(df$data)[selectedRow]
     session$sendCustomMessage(type = 'resetInputValue', message =  "select_button")
-    
+
     fname <- paste0('lib/',ref_id, '.bib')
     this_ref <- ReadBib(fname)
     this_ref_raw <- readLines(fname)

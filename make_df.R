@@ -20,7 +20,9 @@ update_library <- function() {
   # create the data
   lib_df <- as.data.frame(lib)
   lib_df$Actions <- NA
-  lib_df <- lib_df %>% select(Actions, everything())
+  lib_df$id <- rownames(lib_df)
+  lib_df <- lib_df %>% 
+    select(Actions, year, title, everything())
   
   saveRDS(lib_df, file = 'lib_df.rds')
   saveRDS(names(lib_df), file = 'select_var.RDS')

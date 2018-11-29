@@ -22,8 +22,6 @@ and you don't waste as much time doing a deep dive on something you don't need a
 - you need mixtex [https://miktex.org/download]
 
 ## to do
-- delete references
-- only change 1 row of the dt at a time
 
 - all the cool specific entry columns for everything, instead of textarea entry
 
