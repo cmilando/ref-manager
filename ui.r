@@ -23,13 +23,18 @@ ui <- fluidPage(
         ),
         
         tabPanel("Add/Edit", 
-                 
-                 textAreaInput("raw_bibtex", "raw BiBTex",
-                               height = '300px', width = '600px'),
-                 
-                 actionButton("add_ref_to_lib", "Add"),
-                 actionButton("edit_ref_in_lib", "Edit"),
-                 actionButton("delete_ref_in_lib", "Delete")
+                 # column(width = 5,
+                 #  uiOutput("refTextInputs")
+                 # ),
+                 # column(width = 4, offset = 1, 
+                   textAreaInput("raw_bibtex", "raw BiBTex",
+                                 height = '400px', width = '600px'),
+                  
+                   actionButton("add_ref_to_lib", "Add"),
+                   actionButton("edit_ref_in_lib", "Save/Edit"),
+                   actionButton("delete_ref_in_lib", "Delete")
+                   
+                 # )
                  
                  # make sure to add comma back above
                  # h5('Console output'),

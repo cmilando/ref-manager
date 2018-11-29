@@ -35,11 +35,7 @@ add_edit <- function(raw_text, add_edit_delete) {
   
   # create the data, this will automatically sort things for you
   lib_df <- as.data.frame(lib)
-  lib_df$Actions <- NA
-  lib_df$id <- rownames(lib_df)
-  lib_df <- lib_df %>% 
-    select(Actions, year, title, everything())
-  
+
   saveRDS(lib_df, file = 'lib_df.rds')
   
   return(tmp$key)

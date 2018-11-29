@@ -13,7 +13,7 @@ server <- function(input, output, session) {
   # makes the columns selectable
   output$checkbox <- renderUI({
     checkboxGroupInput(inputId = "select_var", 
-                       label = "Select Feature variables", 
+                       label = "Select table columns", 
                        choices = names(df$data),
                        selected = readRDS('select_var.RDS'))
   })
@@ -22,24 +22,36 @@ server <- function(input, output, session) {
     #overwrite the current cols.rds
     req(input$select_var)
     saveRDS(input$select_var, 'select_var.RDS')
-    df_sel <- df$data %>% select(input$select_var) %>% arrange(year)
+    
+    df$data[is.na(df$data)] <- "-"
+    
+    df_sel <- df$data %>% 
+      select(Actions, input$select_var) %>% 
+      arrange(year)
+    
   })
   
   output$ref_table <- DT::renderDataTable({
       df_sel() 
     }, server = FALSE, escape = FALSE, 
-           selection = 'none', rownames= FALSE)
+           selection = 'none', rownames= FALSE, 
+    extensions = 'ColReorder',
+    options = list(pageLength = 100, colReorder = TRUE))
   
+  # ----------------------------------------------------------
   observeEvent(input$select_button, {
-
+    
     selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
     ref_id <- rownames(df$data)[selectedRow]
     session$sendCustomMessage(type = 'resetInputValue', message =  "select_button")
-
-    fname <- paste0('lib/',ref_id, '.bib')
-    this_ref <- ReadBib(fname)
-    this_ref_raw <- readLines(fname)
     
+    action_col <- which(colnames(df$data) == 'Actions')
+    
+    row_as_bib <- as.BibEntry(df$data[selectedRow, -action_col])
+    WriteBib(row_as_bib, 'tmp')
+    this_ref <- ReadBib('tmp.bib')
+    this_ref_raw <- readLines('tmp.bib')
+
     updateTextAreaInput(session, "raw_bibtex", 
                         value = paste0(this_ref_raw, collapse = '\n'))
     
@@ -52,6 +64,25 @@ server <- function(input, output, session) {
   #' ADD / EDIT / DELETE
   #' ////////////////////////////////////////////////////////////////////////
   
+  # output$refTextInputs <- renderUI({
+  #   
+  #   tmp <- ReadBib('tmp.dat')
+  #   flat_tmp <- unlist(tmp)
+  # 
+  #   unique_names <- make.unique(names(flat_tmp))
+  #   names(flat_tmp) <- unique_names
+  #   
+  #   n_elements <- length(unlist(tmp))
+  #   lapply(1:n_elements, function(i) {
+  #     val <- flat_tmp[[i]]
+  #     if(length(val) > 1) val <- paste(val, collapse = '|')
+  #     textAreaInput(inputId = paste0("refText_", unique_names[i]), 
+  #               label = unique_names[i],
+  #               value = val, 
+  #               width = '500px')
+  #   })
+  # })
+  
   observeEvent(input$add_ref_to_lib, {
     add_edit(input$raw_bibtex, 'add')
     df$data <- readRDS('lib_df.RDS')
@@ -62,6 +93,7 @@ server <- function(input, output, session) {
     add_edit(input$raw_bibtex, 'edit')
     df$data <- readRDS('lib_df.RDS')
     updateTabsetPanel(session, "inTabset", selected = "Table")
+    
   })
   
   observeEvent(input$delete_ref_in_lib, {

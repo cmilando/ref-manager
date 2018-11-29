@@ -19,21 +19,29 @@ update_library <- function() {
   
   # create the data
   lib_df <- as.data.frame(lib)
-  lib_df$Actions <- NA
-  lib_df$id <- rownames(lib_df)
-  lib_df <- lib_df %>% 
-    select(Actions, year, title, everything())
-  
+
   saveRDS(lib_df, file = 'lib_df.rds')
-  saveRDS(names(lib_df), file = 'select_var.RDS')
+  
+  if(!file.exists('select_var.RDS')) {
+    saveRDS(names(lib_df), file = 'select_var.RDS')
+  }
   
 }
 
-# - not run
-# for (i in 1:length(lib)) {
-#   fname <- paste0('lib/',lib[[i]]$key)
-#   WriteBib(lib[[i]],fname)
+# reset_db
+# reset_db <- function() {
+#   
+#   lib <- ReadBib('lib.bib')
+#   lib_df <- as.data.frame(lib)
+#   lib_2 <- as.BibEntry(lib_df[, 1:15])
+# 
+#   for (i in 1:length(lib_2)) {
+#     fname <- paste0('lib/',lib_2[[i]]$key)
+#     WriteBib(lib_2[[i]],fname)
+#   }
 # }
+# - not run
+
 
 
 update_index <- function(key, new_entry) {
