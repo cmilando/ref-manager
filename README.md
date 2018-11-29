@@ -17,3 +17,14 @@ and you don't waste as much time doing a deep dive on something you don't need a
 
 ## requirements
 - you need mixtex [https://miktex.org/download]
+
+## to do
+- delete references
+- only change 1 row of the dt at a time
+
+- dt sortable (think it already is)
+- something about column widths
+
+- error checking
+-- no duplicate names
+-- no bibtex errors
