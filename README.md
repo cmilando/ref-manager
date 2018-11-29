@@ -26,7 +26,7 @@ and you don't waste as much time doing a deep dive on something you don't need a
 - all the cool specific entry columns for everything, instead of textarea entry
 
 - dt sortable (think it already is)
-- something about column widths
+- something about column widths - make the select vars have a built in column width
 
 - writing to a pdf, using the old code
 
