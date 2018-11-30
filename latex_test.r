@@ -1,10 +1,10 @@
 
 library(tools)
 
-system('rm temp.*')
+system("rm temp.*")
 sink("temp.Rnw")
 
-cat('
+cat("
 \\documentclass{article}
 \\usepackage[top=0.3in, bottom=0.3in, left=0.3in, right=0.3in]{geometry}
 \\usepackage{Sweave}
@@ -14,7 +14,7 @@ cat('
 \\hypersetup{colorlinks=true,urlcolor=blue,}
 
 \\begin{document}
-')
+")
 
 cat("
 \\end{document}
@@ -23,4 +23,4 @@ cat("
 sink()
 Sweave("temp.Rnw")
 
-texi2pdf('temp.tex')
+texi2pdf("temp.tex")

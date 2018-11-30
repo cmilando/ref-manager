@@ -21,7 +21,7 @@ bb <- "@article{rackes2014using,
   publisher={Elsevier}
 }"
 
-write(bb, 'tmp.dat')
+write(bb, "tmp.dat")
 
 
-yy <- ReadBib('tmp.dat')
+yy <- ReadBib("tmp.dat")
