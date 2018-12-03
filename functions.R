@@ -39,6 +39,24 @@ add_edit <- function(raw_text, add_edit_delete) {
     
     saveRDS(lib_df, file = "lib_df.rds")
     
+    # update the select_var
+    select_var_prev <- readRDS('select_var.RDS')
+    select_var_prev$names <- as.character(select_var_prev$names)
+    if(!identical(sort(names(lib_df)), sort(select_var_prev$names))) {
+      xx <- data.frame(names = names(lib_df), 
+                                width = 100, 
+                                selected = 0, 
+                                order = length(names(lib_df)),
+                       stringsAsFactors = F)
+      for(i in 1:nrow(xx)) {
+        if(xx$names[i] %in% select_var_prev$names) {
+          j <- which(select_var_prev$names == xx$names[i])
+          xx[i, ] <- select_var_prev[j, ]
+        }
+      }
+      saveRDS(xx, 'select_var.RDS')
+    }
+    
     return(tmp$key)
     
 }

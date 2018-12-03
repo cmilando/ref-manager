@@ -22,6 +22,9 @@ and you don't waste as much time doing a deep dive on something you don't need a
 - you need mixtex [https://miktex.org/download]
 
 ## to do
+- defiintely can trigger a re-render
+- javascript potentially
+
 - make a whole special tab for column settings
 -- color
 -- column width
