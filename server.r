@@ -35,7 +35,13 @@ server <- function(input, output, session) {
         
     })
     
-    output$ref_table <- DT::renderDataTable({ df_sel() }, 
+    output$ref_table <- DT::renderDataTable({ 
+        my_table <- df_sel()
+        if("link" %in% names(my_table)) {
+          my_table$link <- createLink(my_table$link)
+        }
+        return(my_table)
+      }, 
         server = FALSE, escape = FALSE, selection = "none", rownames = FALSE, 
         options = list(pageLength = 100, autoWidth = TRUE, scrollX = TRUE,
                        scrollY = 500, columnDefs = get_widths()))

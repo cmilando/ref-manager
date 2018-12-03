@@ -82,8 +82,13 @@ get_widths <- function() {
             list(targets = i, width = paste0(select_vars_T$width[i], "px"))
         }
     })
+    print('re-render table')
     print(do.call(rbind, out))
     return(out)
+}
+
+createLink <- function(val) {
+  sprintf('<a href="%s" target="_blank" class="btn btn-primary">link</a>',val)
 }
 
 # output$refTextInputs <- renderUI({ tmp <- ReadBib('tmp.dat') flat_tmp
