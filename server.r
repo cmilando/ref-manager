@@ -4,6 +4,11 @@ server <- function(input, output, session) {
     #' TABLE
     #' //////////////////////////////////////////////////////////////////////////
     
+    observeEvent(input$backup, {
+      system('cp lib_df.RDS lib_df_backup.RDS')
+      showModal(modalDialog(title = "","database backup successful"))
+    })
+  
     df <- reactiveValues()
     df$data <- readRDS("lib_df.RDS")
     observe(df$data$Actions <- shinyInput(actionButton, nrow(df$data), 

@@ -10,6 +10,7 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
+      actionButton('backup','Backup DB'),
       uiOutput("checkbox"),
       width = 2
     ),
