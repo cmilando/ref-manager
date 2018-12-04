@@ -53,13 +53,13 @@ server <- function(input, output, session) {
     
     # ----------------------------------------------------------
     observeEvent(input$select_button, {
-        
+        cat('> EDIT ROW CLICKED\n')
         selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
         session$sendCustomMessage(type = "resetInputValue", message = "select_button")
         
         action_col <- which(colnames(df$data) == "Actions")
         row_as_bib <- as.BibEntry(df$data[selectedRow, -action_col])
-        WriteBib(row_as_bib, "tmp")
+        suppressMessages(WriteBib(row_as_bib, "tmp"))
         this_ref_raw <- readLines("tmp.bib")
         
         updateTextAreaInput(session, "raw_bibtex", value = paste0(this_ref_raw, 
@@ -78,19 +78,21 @@ server <- function(input, output, session) {
         add_edit(input$raw_bibtex, "add")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
+        showNotification(paste("Ref add successful"), duration = 3, type = 'message')
     })
     
     observeEvent(input$edit_ref_in_lib, {
         add_edit(input$raw_bibtex, "edit")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
-        
+        showNotification(paste("Ref edit successful"), duration = 3, type = 'message')
     })
     
     observeEvent(input$delete_ref_in_lib, {
         key_to_delete <- add_edit(input$raw_bibtex, "delete")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
+        showNotification(paste("Ref delete successful"), duration = 3, type = 'message')
     })
     
     #' ////////////////////////////////////////////////////////////////////////

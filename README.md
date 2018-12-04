@@ -21,23 +21,3 @@ and you don't waste as much time doing a deep dive on something you don't need a
 ## requirements
 - you need mixtex [https://miktex.org/download]
 
-## to do
-- defiintely can trigger a re-render
-- javascript potentially
-
-- make a whole special tab for column settings
--- color
--- column width
--- checkbox control
-
-- error checking
--- no duplicate names
--- no bibtex errors
--- adding when you mean to edit etc etc
-
-## distant to do
-- also use the Button extension to create something you can export to Excel
-- all the cool specific entry columns for everything, instead of textarea entry
-- writing to a pdf, using the old code
-- make a local version of RefManageR in case it goes off CRAN
-- git pull, rscript standalone etc etc

@@ -1,5 +1,7 @@
 add_edit <- function(raw_text, add_edit_delete) {
     
+    cat('> ADD/EDIT/DELETE CLICKED:', add_edit_delete, '\n')
+  
     # on empty, return empty
     if (raw_text == "") 
         return()
@@ -22,10 +24,10 @@ add_edit <- function(raw_text, add_edit_delete) {
     
     # make a new full library entry
     lib_as_bib <- as.BibEntry(lib_df)
-    WriteBib(lib_as_bib, "lib")
+    suppressMessages(WriteBib(lib_as_bib, "lib"))
     
     if (add_edit_delete %in% c("add", "edit")) {
-        WriteBib(tmp, fname)
+        suppressMessages(WriteBib(tmp, fname))
         f_lib_out <- file("lib.bib", open = "a")
         writeLines(raw_text, f_lib_out, sep = "\n")
         close(f_lib_out)
@@ -82,8 +84,8 @@ get_widths <- function() {
             list(targets = i, width = paste0(select_vars_T$width[i], "px"))
         }
     })
-    print('re-render table')
-    print(do.call(rbind, out))
+    cat('> get widths\n')
+    #print(do.call(rbind, out))
     return(out)
 }
 
