@@ -88,7 +88,11 @@ get_widths <- function() {
 }
 
 createLink <- function(val) {
-  sprintf('<a href="%s" target="_blank" class="btn btn-primary">link</a>',val)
+  if(val != '-') {
+    sprintf('<a href="%s" target="_blank" class="btn btn-primary">link</a>',val)
+  } else {
+    val
+  }
 }
 
 # output$refTextInputs <- renderUI({ tmp <- ReadBib('tmp.dat') flat_tmp
