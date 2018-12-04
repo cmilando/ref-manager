@@ -1,5 +1,0 @@
-https://github.com/ckreibich/scholar.py/blob/master/scholar.py
-
-http://kitchingroup.cheme.cmu.edu/blog/2015/04/03/Getting-data-from-the-Scopus-API/
-  
-  

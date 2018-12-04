@@ -9,6 +9,9 @@ library(formatR)
 options(shiny.launch.browser = T)
 #tidy_dir(width = 70)
 
+# get any changes
+# system("git pull")
+
 source("make_df.R")
 update_library()
 
