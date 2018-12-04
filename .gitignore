@@ -9,3 +9,4 @@ lib/
 temp*
 tmp*
 *.RDS
+*.bib
