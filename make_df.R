@@ -30,3 +30,22 @@ update_library <- function() {
     }
     
 }
+
+create_bib_files <- function() {
+  
+  # removing a column is
+  # drop.cols <- c('thesis')
+  # lib_df <- lib_df %>% select(-one_of(drop.cols))
+  # saveRDS(lib_df, 'lib_df.RDS')
+  
+  lib_df <- readRDS('lib_df.rds')
+  lib <- as.BibEntry(lib_df)
+  
+  for (i in 1:length(lib)) {
+    bib <- lib[[i]]
+    key <- bib$key
+    WriteBib(bib = bib, file = paste0('lib/', key, '.bib'))
+  }
+  
+  
+}
