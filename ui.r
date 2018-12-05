@@ -10,7 +10,9 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      actionButton('backup','Backup DB'),
+      actionButton('backup', 'Backup', 
+                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+      actionButton('export_to_pdf', 'Export to Pdf'),
       uiOutput("checkbox"),
       width = 2
     ),

@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyWidgets)
 library(DT)
 library(shinyjs)
 library(tidyverse)
@@ -9,10 +10,9 @@ library(tools)
 library(dplR)
 
 options(shiny.launch.browser = T)
-#tidy_dir(width = 70)
+# tidy_dir(width = 80)
 
-# get any changes
-# system("git pull")
+# get any changes system('git pull')
 
 source("make_df.R")
 update_library()

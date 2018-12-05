@@ -1,7 +1,6 @@
 update_library <- function() {
     
-    # create a new lib.bib by combining all the various references into one
-    # file
+    # create a new lib.bib by combining all the various references into one file
     file_names <- list.files(path = "lib", pattern = ".bib", full.names = T)
     n_files <- length(file_names)
     f_out_list <- vector("list", n_files)
@@ -32,20 +31,18 @@ update_library <- function() {
 }
 
 create_bib_files <- function() {
-  
-  # removing a column is
-  # drop.cols <- c('thesis')
-  # lib_df <- lib_df %>% select(-one_of(drop.cols))
-  # saveRDS(lib_df, 'lib_df.RDS')
-  
-  lib_df <- readRDS('lib_df.rds')
-  lib <- as.BibEntry(lib_df)
-  
-  for (i in 1:length(lib)) {
-    bib <- lib[[i]]
-    key <- bib$key
-    WriteBib(bib = bib, file = paste0('lib/', key, '.bib'))
-  }
-  
-  
+    
+    # removing a column is drop.cols <- c('thesis') lib_df <- lib_df %>%
+    # select(-one_of(drop.cols)) saveRDS(lib_df, 'lib_df.RDS')
+    
+    lib_df <- readRDS("lib_df.rds")
+    lib <- as.BibEntry(lib_df)
+    
+    for (i in 1:length(lib)) {
+        bib <- lib[[i]]
+        key <- bib$key
+        WriteBib(bib = bib, file = paste0("lib/", key, ".bib"))
+    }
+    
+    
 }

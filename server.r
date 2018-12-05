@@ -5,14 +5,21 @@ server <- function(input, output, session) {
     #' //////////////////////////////////////////////////////////////////////////
     
     observeEvent(input$backup, {
-      system('cp lib_df.RDS lib_df_backup.RDS')
-      showModal(modalDialog(title = "","database backup successful"))
+        cat("> BACKUP DB\n")
+        system("cp lib_df.RDS lib_df_backup.RDS")
+        showModal(modalDialog(title = "", "database backup successful"))
     })
-  
+    
+    observeEvent(input$export_to_pdf, {
+        cat("> EXPORT DB TO PDF\n")
+        output_table_pdf()
+        showModal(modalDialog(title = "", "database to pdf successful"))
+    })
+    
     df <- reactiveValues()
     df$data <- readRDS("lib_df.RDS")
-    observe(df$data$Actions <- shinyInput(actionButton, nrow(df$data), 
-        "button_", label = "Edit", onclick = "Shiny.onInputChange(\"select_button\",  this.id)"))
+    observe(df$data$Actions <- shinyInput(actionButton, nrow(df$data), "button_", 
+        label = "Edit", onclick = "Shiny.onInputChange(\"select_button\",  this.id)"))
     
     # makes the columns selectable
     output$checkbox <- renderUI({
@@ -40,20 +47,18 @@ server <- function(input, output, session) {
         
     })
     
-    output$ref_table <- DT::renderDataTable({ 
+    output$ref_table <- DT::renderDataTable({
         my_table <- df_sel()
-        if("link" %in% names(my_table)) {
-          my_table$link <- createLink(my_table$link)
+        if ("link" %in% names(my_table)) {
+            my_table$link <- createLink(my_table$link)
         }
         return(my_table)
-      }, 
-        server = FALSE, escape = FALSE, selection = "none", rownames = FALSE, 
-        options = list(pageLength = 100, autoWidth = TRUE, scrollX = TRUE,
-                       scrollY = 500, columnDefs = get_widths()))
+    }, server = FALSE, escape = FALSE, selection = "none", rownames = FALSE, options = list(pageLength = 100, 
+        autoWidth = TRUE, scrollX = TRUE, scrollY = 500, columnDefs = get_widths()))
     
     # ----------------------------------------------------------
     observeEvent(input$select_button, {
-        cat('> EDIT ROW CLICKED\n')
+        cat("> EDIT ROW CLICKED\n")
         selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
         session$sendCustomMessage(type = "resetInputValue", message = "select_button")
         
@@ -62,8 +67,7 @@ server <- function(input, output, session) {
         suppressMessages(WriteBib(row_as_bib, "tmp"))
         this_ref_raw <- readLines("tmp.bib")
         
-        updateTextAreaInput(session, "raw_bibtex", value = paste0(this_ref_raw, 
-            collapse = "\n"))
+        updateTextAreaInput(session, "raw_bibtex", value = paste0(this_ref_raw, collapse = "\n"))
         
         updateTabsetPanel(session, "inTabset", selected = "Add/Edit")
         
@@ -78,21 +82,21 @@ server <- function(input, output, session) {
         add_edit(input$raw_bibtex, "add")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
-        showNotification(paste("Ref add successful"), duration = 3, type = 'message')
+        showNotification(paste("Ref add successful"), duration = 3, type = "message")
     })
     
     observeEvent(input$edit_ref_in_lib, {
         add_edit(input$raw_bibtex, "edit")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
-        showNotification(paste("Ref edit successful"), duration = 3, type = 'message')
+        showNotification(paste("Ref edit successful"), duration = 3, type = "message")
     })
     
     observeEvent(input$delete_ref_in_lib, {
         key_to_delete <- add_edit(input$raw_bibtex, "delete")
         df$data <- readRDS("lib_df.RDS")
         updateTabsetPanel(session, "inTabset", selected = "Table")
-        showNotification(paste("Ref delete successful"), duration = 3, type = 'message')
+        showNotification(paste("Ref delete successful"), duration = 3, type = "message")
     })
     
     #' ////////////////////////////////////////////////////////////////////////
@@ -102,17 +106,17 @@ server <- function(input, output, session) {
     output$table_settings = renderRHandsontable({
         req(input$select_var)
         DF <- readRDS("select_var.RDS")
-
-        rhandsontable(DF) %>% hot_table(highlightCol = TRUE, highlightRow = TRUE) %>%
-            hot_cols(colWidths = c(125, 100, 100, 100), manualColumnResize = T,
-                columnSorting = T) %>% hot_col(col = "names", readOnly = T)
+        
+        rhandsontable(DF) %>% hot_table(highlightCol = TRUE, highlightRow = TRUE) %>% 
+            hot_cols(colWidths = c(125, 100, 100, 100), manualColumnResize = T, columnSorting = T) %>% 
+            hot_col(col = "names", readOnly = T)
     })
-
+    
     observeEvent(input$update_table, {
-      
+        
         output_table <- hot_to_r(input$table_settings) %>% arrange(order)
-        saveRDS(output_table, 'select_var.RDS')
-
+        saveRDS(output_table, "select_var.RDS")
+        
     })
     
 }
