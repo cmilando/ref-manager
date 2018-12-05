@@ -1,3 +1,6 @@
+### TO READ
+- https://stackoverflow.com/questions/49074854/how-to-make-input-from-renderui-trigger-renderdatatable-in-r-shiny
+
 ### short-term
 - defintely can trigger a re-render/javascript potentially
 - make a whole special tab for column settings: color, column width, checkbox control
@@ -16,7 +19,9 @@
 ### long-term
 * exporting lib to endnote format
 * use the Button extension to create something you can export to Excel
-* writing to a pdf, using the old code
 * make a local version of RefManageR in case it goes off CRAN
 * calculated fields (e.g., first author, can be calculated from author list)
 * button to grab all info from current page (link, full citation (maybe can just "press" and grab bibtex citation from google scholar), and abstract)
+
+### to clean up
+* writing to a pdf, using the old code

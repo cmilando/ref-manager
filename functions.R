@@ -109,3 +109,122 @@ createLink <- function(vals) {
 # if(length(val) > 1) val <- paste(val, collapse = '|')
 # textAreaInput(inputId = paste0('refText_', unique_names[i]), label =
 # unique_names[i], value = val, width = '500px') }) })
+
+
+# create output pdf
+output_table_pdf <- function() {
+  
+  lib_df <- readRDS('lib_df.RDS')
+  lib <- as.BibEntry(lib_df)
+  lib <- sort(lib)
+  
+  fname <- 'my_lib'
+  
+  cat_list <- get_cat_list(lib)
+  
+  sink(paste0('tmp/',fname,".Rnw"))
+  
+  cat('
+      \\documentclass{article}
+      \\usepackage[top=0.3in, bottom=0.3in, left=0.3in, right=0.3in]{geometry}
+      \\usepackage[utf8]{inputenc}
+      \\usepackage{textcomp}
+      
+      \\usepackage{hyperref}
+      \\hypersetup{colorlinks=true,urlcolor=blue,}
+      \\begin{document}
+      ')
+  
+  invisible(cat(cat_list))
+  
+  cat("
+      \\end{document}
+      ")
+  
+  sink()
+  Sweave(paste0('tmp/',fname,".Rnw"))
+  
+  x <- readLines(paste0(fname,".tex"))
+  y <- gsub( "<U+00B5>", "\\textmu ", x, fixed = T)
+  y2 <- gsub( "<U+E5F8>", " \\mbox{-}\\mbox{-} ", y, fixed = T)
+  cat(y2, file=paste0(fname,".tex"), sep="\n")
+  
+  texi2pdf(paste0(fname,".tex"), clean = T)
+  
+  system(paste('mv',paste0(fname,".tex"),
+               paste0('tmp/',fname,".tex")))
+  
+  system(paste('mv',paste0(fname,".pdf"),
+               paste0('pdfs/',fname,".pdf")))
+
+}
+
+make_citation <- function(ref) {
+  
+  # AUTHOR
+  n_authors <- length(ref$author)
+  author_char <- vector('character', n_authors)
+  for(i in 1:n_authors) {
+    family_name <- gsub('[[:punct:]]', "", paste(ref$author$family[[i]], collapse = ' '))
+    given_name <- gsub('[[:punct:]]', "", paste(ref$author$given[[i]], collapse = ' '))
+    author_char[i] <- paste0(family_name, ', ', given_name)
+  }
+  author_char <- paste(author_char, collapse = '; ')
+  author_char <- paste0(author_char, '. ')
+  
+  # TITLE
+  title_char <- paste0("'", ref$title, ".' ")
+  
+  # YEAR
+  year_char <- paste0("(", ref$year, "). ")
+  
+  # CITATION
+  citation <- paste0(author_char, 
+                     title_char, 
+                     year_char)
+  
+  return(citation)
+  
+}
+
+get_cat_list <- function(lib) {
+  
+  cat_list <- c()
+  
+  for (i in 1:length(lib)) {
+    
+    ref <- make_citation(lib[[i]])
+    
+    citation <- gsub("\"", "'", ref, fixed = T)
+    citation_u <- latexify(citation, doublebackslash = F)
+    
+    abstract <- gsub("\"", "'", lib[[i]]$abstract, fixed = T)
+    abstract_u <- latexify(abstract, doublebackslash = F)
+    
+    notes_u <- latexify(lib[[i]]$highlights, doublebackslash = F)
+    
+    cat_list <- c(cat_list, paste0("\\noindent "))
+    
+    cat_list <- c(cat_list, paste0("\\textbf{\\underline{REF-", i, "}} ", sep = ""))
+    cat_list <- c(cat_list, paste0("\\textbf{\\textit{", citation_u, "}} ", sep = ""))
+    cat_list <- c(cat_list, paste0("\\href{", lib[[i]]$link, "}{link} ", sep = ""))
+    
+    cat_list <- c(cat_list, paste0("\\\\  \\\\"))
+    
+    cat_list <- c(cat_list, paste0("\\indent  "))
+    
+    cat_list <- c(cat_list, "\\underline{Abstract:}")
+    cat_list <- c(cat_list, paste0(abstract_u))
+    cat_list <- c(cat_list, paste0("\\\\  \\\\"))
+    
+    cat_list <- c(cat_list, paste0("\\indent  "))
+    
+    cat_list <- c(cat_list, "\\underline{Notes:}")
+    cat_list <- c(cat_list, paste0(notes_u))
+    cat_list <- c(cat_list, paste0("\\\\  \\\\"))
+    
+  }
+  
+  return(cat_list)
+  
+}

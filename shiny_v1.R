@@ -5,6 +5,8 @@ library(tidyverse)
 library(rhandsontable)
 library(RefManageR)
 library(formatR)
+library(tools)
+library(dplR)
 
 options(shiny.launch.browser = T)
 #tidy_dir(width = 70)
