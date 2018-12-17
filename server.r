@@ -49,8 +49,8 @@ server <- function(input, output, session) {
     
     output$ref_table <- DT::renderDataTable({
         my_table <- df_sel()
-        if ("link" %in% names(my_table)) {
-            my_table$link <- createLink(my_table$link)
+        if ("url" %in% names(my_table)) {
+            my_table$url <- createLink(my_table$url)
         }
         return(my_table)
     }, server = FALSE, escape = FALSE, selection = "none", rownames = FALSE, options = list(pageLength = 100, 

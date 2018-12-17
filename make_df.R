@@ -32,9 +32,18 @@ update_library <- function() {
 
 create_bib_files <- function() {
     
-    # removing a column is drop.cols <- c('thesis') lib_df <- lib_df %>%
-    # select(-one_of(drop.cols)) saveRDS(lib_df, 'lib_df.RDS')
+    # removing a column is 
+    # drop.cols <- c('thesis') 
+    # lib_df <- lib_df %>% select(-one_of(drop.cols)) 
+
+    # rename a column is
+    # old_name <- 'link'
+    # new_name <- 'url'
+    # replace_col <- which(names(lib_df) == old_name)
+    # names(lib_df)[replace_col] <- new_name
     
+    # saveRDS(lib_df, 'lib_df.RDS')
+  
     lib_df <- readRDS("lib_df.rds")
     lib <- as.BibEntry(lib_df)
     

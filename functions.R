@@ -198,7 +198,7 @@ get_cat_list <- function(lib) {
         position_u <- latexify(lib[[i]]$position, doublebackslash = F)
         included_u <- latexify(lib[[i]]$included, doublebackslash = F)
         
-        link <- lib[[i]]$link
+        link <- lib[[i]]$url
         
         cat_list <- c(cat_list, paste0("\\noindent "))
         
