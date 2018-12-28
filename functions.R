@@ -7,41 +7,43 @@ add_edit <- function(raw_text, add_edit_delete) {
         return()
     
     # first step is to read it in and delete the existing .bib file
+    cat('> -- WRITE NEW tmp file\n')
     write(raw_text, "tmp.dat")
     tmp <- ReadBib("tmp.dat")
     system("rm tmp.dat")
-    fname <- paste0("lib/", tmp$key)
+
     
     # read in lib
     lib_df <- readRDS("lib_df.RDS")
     
     # unless you are adding, delete the row
     if (add_edit_delete %in% c("edit", "delete")) {
+        cat('> -- DELETE the row \n')
         system(paste0("rm ", fname, ".bib"))
         row_to_delete <- which(rownames(lib_df) == tmp$key)
         lib_df <- lib_df[-row_to_delete, ]
+        lib_as_bib <- as.BibEntry(lib_df)
+        suppressMessages(WriteBib(lib_as_bib, "lib"))
     }
     
-    # make a new full library entry
-    lib_as_bib <- as.BibEntry(lib_df)
-    suppressMessages(WriteBib(lib_as_bib, "lib"))
-    
+    # unless you are deleting, add the new/edited row
     if (add_edit_delete %in% c("add", "edit")) {
+        cat('> -- ADD the row back in \n')
+        fname <- paste0("lib/", tmp$key)
         suppressMessages(WriteBib(tmp, fname))
         f_lib_out <- file("lib.bib", open = "a")
         writeLines(raw_text, f_lib_out, sep = "\n")
         close(f_lib_out)
     }
     
-    # then read it in
+    # then read in the new database
+    cat('> -- READ lib.bib \n')
     lib <- ReadBib("lib.bib")
-    
-    # create the data, this will automatically sort things for you
     lib_df <- as.data.frame(lib)
-    
     saveRDS(lib_df, file = "lib_df.rds")
     
-    # update the select_var
+    # update the select_var, if none are selected, select 'title'
+    cat('> -- UPDATE select vars \n')
     select_var_prev <- readRDS("select_var.RDS")
     select_var_prev$names <- as.character(select_var_prev$names)
     if (!identical(sort(names(lib_df)), sort(select_var_prev$names))) {
@@ -52,6 +54,12 @@ add_edit <- function(raw_text, add_edit_delete) {
                 j <- which(select_var_prev$names == xx$names[i])
                 xx[i, ] <- select_var_prev[j, ]
             }
+        }
+        if(all(xx$selected == 0)) {
+          title_row <- which(xx$names == 'title')
+          xx$selected[title_row] <- 1
+          year_row <- which(xx$names == 'year')
+          xx$selected[year_row] <- 1
         }
         saveRDS(xx, "select_var.RDS")
     }

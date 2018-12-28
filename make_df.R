@@ -1,4 +1,9 @@
 update_library <- function() {
+  
+    # eject early if empty
+    if (!file.exists('lib.bib')) {
+      return('> NO lib.bib = FRESH START')
+    }
     
     # create a new lib.bib by combining all the various references into one file
     file_names <- list.files(path = "lib", pattern = ".bib", full.names = T)
