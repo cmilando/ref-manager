@@ -9,18 +9,15 @@ library(formatR)
 library(tools)
 library(dplR)
 
-options(shiny.launch.browser = T)
-# tidy_dir(width = 80)
+# tidy_dir(width = 60) get any changes system('git pull')
 
-# get any changes system('git pull')
-
-source("make_df.R")
+source("src/make_df.R")
 update_library()
 
-source("functions.R")
+source("src/functions.R")
 
-source("server.r")
-source("ui.r")
+source("src/server.r")
+source("src/ui.r")
 
 a <- shinyApp(ui = ui, server = server)
 

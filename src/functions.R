@@ -6,62 +6,69 @@ add_edit <- function(raw_text, add_edit_delete) {
     if (raw_text == "") 
         return()
     
-    # first step is to read it in and delete the existing .bib file
-    cat('> -- WRITE NEW tmp file\n')
-    write(raw_text, "tmp.dat")
-    tmp <- ReadBib("tmp.dat")
-    system("rm tmp.dat")
-
+    # first step is to read it in and delete the existing .bib
+    # file
+    cat("> -- WRITE NEW tmp file\n")
+    write(raw_text, "tmp/tmp.dat")
+    tmp <- ReadBib("tmp/tmp.dat")
+    unlink("tmp/tmp.dat")
+    
     
     # read in lib
-    lib_df <- readRDS("lib_df.RDS")
+    lib_df <- readRDS("tmp/lib_df.RDS")
     
     # unless you are adding, delete the row
     if (add_edit_delete %in% c("edit", "delete")) {
-        cat('> -- DELETE the row \n')
-        system(paste0("rm ", fname, ".bib"))
+        fname <- paste0("lib/", tmp$key)
+        cat("> -- DELETE the row: ",fname, "\n")
+        unlink(paste0(fname, ".bib"))
         row_to_delete <- which(rownames(lib_df) == tmp$key)
         lib_df <- lib_df[-row_to_delete, ]
+        if (nrow(lib_df) == 0) {
+            lib <- ReadBib("dat/lib_default.bib")
+            lib_df <- as.data.frame(lib)
+            saveRDS(lib_df, file = "tmp/lib_df.rds")
+        }
         lib_as_bib <- as.BibEntry(lib_df)
-        suppressMessages(WriteBib(lib_as_bib, "lib"))
+        suppressMessages(WriteBib(lib_as_bib, "tmp/lib"))
     }
     
     # unless you are deleting, add the new/edited row
     if (add_edit_delete %in% c("add", "edit")) {
-        cat('> -- ADD the row back in \n')
+        cat("> -- ADD the row back in \n")
         fname <- paste0("lib/", tmp$key)
         suppressMessages(WriteBib(tmp, fname))
-        f_lib_out <- file("lib.bib", open = "a")
+        f_lib_out <- file("tmp/lib.bib", open = "a")
         writeLines(raw_text, f_lib_out, sep = "\n")
         close(f_lib_out)
     }
     
     # then read in the new database
-    cat('> -- READ lib.bib \n')
-    lib <- ReadBib("lib.bib")
+    cat("> -- READ lib.bib \n")
+    lib <- ReadBib("tmp/lib.bib")
     lib_df <- as.data.frame(lib)
-    saveRDS(lib_df, file = "lib_df.rds")
+    saveRDS(lib_df, file = "tmp/lib_df.rds")
     
     # update the select_var, if none are selected, select 'title'
-    cat('> -- UPDATE select vars \n')
-    select_var_prev <- readRDS("select_var.RDS")
+    cat("> -- UPDATE select vars \n")
+    select_var_prev <- readRDS("tmp/select_var.RDS")
     select_var_prev$names <- as.character(select_var_prev$names)
     if (!identical(sort(names(lib_df)), sort(select_var_prev$names))) {
-        xx <- data.frame(names = names(lib_df), width = 100, selected = 0, order = length(names(lib_df)), 
-            stringsAsFactors = F)
+        xx <- data.frame(names = names(lib_df), width = 100, 
+            selected = 0, order = length(names(lib_df)), stringsAsFactors = F)
         for (i in 1:nrow(xx)) {
             if (xx$names[i] %in% select_var_prev$names) {
                 j <- which(select_var_prev$names == xx$names[i])
                 xx[i, ] <- select_var_prev[j, ]
             }
         }
-        if(all(xx$selected == 0)) {
-          title_row <- which(xx$names == 'title')
-          xx$selected[title_row] <- 1
-          year_row <- which(xx$names == 'year')
-          xx$selected[year_row] <- 1
+        if (all(xx$selected == 0)) {
+            title_row <- which(xx$names == "title")
+            xx$selected[title_row] <- 1
+            year_row <- which(xx$names == "year")
+            xx$selected[year_row] <- 1
         }
-        saveRDS(xx, "select_var.RDS")
+        saveRDS(xx, "tmp/select_var.RDS")
     }
     
     return(tmp$key)
@@ -80,16 +87,17 @@ shinyInput <- function(FUN, len, id, ...) {
 }
 
 get_widths <- function() {
-    select_vars <- readRDS("select_var.RDS")
+    select_vars <- readRDS("tmp/select_var.RDS")
     select_vars_T <- filter(select_vars, selected == 1)
     out <- lapply(0:nrow(select_vars_T), function(i) {
         if (i == 0) {
             list(targets = i, width = "20px")  # for the action column
         } else {
-            list(targets = i, width = paste0(select_vars_T$width[i], "px"))
+            list(targets = i, width = paste0(select_vars_T$width[i], 
+                "px"))
         }
     })
-    cat("> get widths\n")
+    cat("> DT refresh \n")
     # print(do.call(rbind, out))
     return(out)
 }
@@ -108,22 +116,25 @@ createLink <- function(vals) {
     return(vals_out)
 }
 
-# output$refTextInputs <- renderUI({ tmp <- ReadBib('tmp.dat') flat_tmp <-
-# unlist(tmp) unique_names <- make.unique(names(flat_tmp)) names(flat_tmp) <-
-# unique_names n_elements <- length(unlist(tmp)) lapply(1:n_elements, function(i)
-# { val <- flat_tmp[[i]] if(length(val) > 1) val <- paste(val, collapse = '|')
-# textAreaInput(inputId = paste0('refText_', unique_names[i]), label =
-# unique_names[i], value = val, width = '500px') }) })
+# output$refTextInputs <- renderUI({ tmp <-
+# ReadBib('tmp.dat') flat_tmp <- unlist(tmp) unique_names <-
+# make.unique(names(flat_tmp)) names(flat_tmp) <-
+# unique_names n_elements <- length(unlist(tmp))
+# lapply(1:n_elements, function(i) { val <- flat_tmp[[i]]
+# if(length(val) > 1) val <- paste(val, collapse = '|')
+# textAreaInput(inputId = paste0('refText_',
+# unique_names[i]), label = unique_names[i], value = val,
+# width = '500px') }) })
 
 
 # create output pdf
 output_table_pdf <- function() {
     
-    lib_df <- readRDS("lib_df.RDS")
+    lib_df <- readRDS("tmp/lib_df.RDS")
     lib <- as.BibEntry(lib_df)
     lib <- sort(lib)
     
-    fname <- paste0("lib_",as.Date(Sys.time()))
+    fname <- paste0("lib_", as.Date(Sys.time()))
     
     cat_list <- get_cat_list(lib)
     
@@ -156,9 +167,11 @@ output_table_pdf <- function() {
     
     texi2pdf(paste0(fname, ".tex"), clean = T)
     
-    system(paste("mv", paste0(fname, ".tex"), paste0("tmp/", fname, ".tex")))
+    system(paste("mv", paste0(fname, ".tex"), paste0("tmp/", 
+        fname, ".tex")))
     
-    system(paste("mv", paste0(fname, ".pdf"), paste0("pdfs/", fname, ".pdf")))
+    system(paste("mv", paste0(fname, ".pdf"), paste0("pdfs/", 
+        fname, ".pdf")))
     
 }
 
@@ -168,8 +181,10 @@ make_citation <- function(ref) {
     n_authors <- length(ref$author)
     author_char <- vector("character", n_authors)
     for (i in 1:n_authors) {
-        family_name <- gsub("[[:punct:]]", "", paste(ref$author$family[[i]], collapse = " "))
-        given_name <- gsub("[[:punct:]]", "", paste(ref$author$given[[i]], collapse = " "))
+        family_name <- gsub("[[:punct:]]", "", paste(ref$author$family[[i]], 
+            collapse = " "))
+        given_name <- gsub("[[:punct:]]", "", paste(ref$author$given[[i]], 
+            collapse = " "))
         author_char[i] <- paste0(family_name, ", ", given_name)
     }
     author_char <- paste(author_char, collapse = "; ")
@@ -210,9 +225,12 @@ get_cat_list <- function(lib) {
         
         cat_list <- c(cat_list, paste0("\\noindent "))
         
-        cat_list <- c(cat_list, paste0("\\textbf{\\underline{REF-", i, "}} ", sep = ""))
-        cat_list <- c(cat_list, paste0("\\textbf{\\textit{", citation_u, "}} ", sep = ""))
-        cat_list <- c(cat_list, paste0("\\href{", link, "}{link} ", sep = ""))
+        cat_list <- c(cat_list, paste0("\\textbf{\\underline{REF-", 
+            i, "}} ", sep = ""))
+        cat_list <- c(cat_list, paste0("\\textbf{\\textit{", 
+            citation_u, "}} ", sep = ""))
+        cat_list <- c(cat_list, paste0("\\href{", link, "}{link} ", 
+            sep = ""))
         
         cat_list <- c(cat_list, paste0("\\\\  \\\\"))
         

@@ -1,1 +1,1 @@
-Rscript shiny_v1.R
+Rscript src/shiny_v1.R

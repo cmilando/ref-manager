@@ -8,6 +8,4 @@ tmp/
 lib/
 temp*
 tmp*
-*.RDS
-*.bib
 tests/
