@@ -10,3 +10,4 @@ temp*
 tmp*
 *.RDS
 *.bib
+tests/

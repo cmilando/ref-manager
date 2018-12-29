@@ -1,6 +1,12 @@
 ### TO READ
 - https://stackoverflow.com/questions/49074854/how-to-make-input-from-renderui-trigger-renderdatatable-in-r-shiny
 
+### recent lessons
+* add a space column, make width 2000px
+* set up with a default .bib
+* button to trigger whole page refresh
+* maybe have an eye to see into larger boxes
+
 ### short-term
 - defintely can trigger a re-render/javascript potentially
 - make a whole special tab for column settings: color, column width, checkbox control
